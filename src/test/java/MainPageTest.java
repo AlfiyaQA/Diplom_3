@@ -5,23 +5,23 @@ import static org.junit.Assert.assertTrue;
 public class MainPageTest extends BaseTest {
 
     @Test
-    @DisplayName("Is bun available")
-    public void isBunsAvailable() {
-        boolean result = mainPage.isBunSubHeaderVisible();
+    @DisplayName("Check bun tab active")
+    public void checkBunTabActive() throws Exception {
+        boolean result = mainPage.isActiveBunTab();
         assertTrue(result);
     }
 
     @Test
-    @DisplayName("Is sauce available")
-    public void isSauceAvailable() {
-        boolean result = mainPage.isSauceSubHeaderVisible();
+    @DisplayName("Check sauce tab active")
+    public void checkSauceTabActive() throws Exception {
+        boolean result = mainPage.isActiveSauceTab();
         assertTrue(result);
     }
 
     @Test
-    @DisplayName("Is filling available")
-    public void isFillingAvailable() {
-        boolean result = mainPage.isFillingSubHeaderVisible();
+    @DisplayName("Check filling tab active")
+    public void checkFillingTabActive() throws Exception {
+        boolean result = mainPage.isActiveFillingTab();
         assertTrue(result);
     }
 }

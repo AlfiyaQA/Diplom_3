@@ -1,7 +1,6 @@
 package pageobjects;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
@@ -17,32 +16,35 @@ public class MainPage {
 
     //Локатор текста Соберите бургер
     @FindBy(how = How.XPATH, using = ".//h1[text()='Соберите бургер']")
-    public static SelenideElement constructBurgerText;
+    private SelenideElement constructBurgerText;
 
     //Локатор вкладки Булки
-    @FindBy(how = How.XPATH, using = ".//div[@class='tab_tab__1SPyG  pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Булки']")
-    public SelenideElement bunTab;
+    @FindBy(how = How.XPATH, using = ".//*[contains(@class,'tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect')]")
+    private SelenideElement bunTab;
 
     //Локатор вкладки Соусы
-    @FindBy(how = How.XPATH, using = ".//div[@class='tab_tab__1SPyG  pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Соусы']")
-    public SelenideElement sauceTab;
+    @FindBy(how = How.XPATH, using = ".//*[contains(@class,'tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect')]")
+    private SelenideElement sauceTab;
 
     //Локатор вкладки Начинки
-    @FindBy(how = How.XPATH, using = ".//div[@class='tab_tab__1SPyG  pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Начинки']")
-    public SelenideElement fillingTab;
+    @FindBy(how = How.XPATH, using = ".//*[contains(@class,'tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect')]")
+    private SelenideElement fillingTab;
 
     //Локатор подзаголовка Булки
     @FindBy(how = How.XPATH, using = ".//h2[text()='Булки']")
-    public SelenideElement bunSubHeader;
+    private SelenideElement bunSubHeader;
 
     //Локатор подзаголовка Соусы
     @FindBy(how = How.XPATH, using = ".//h2[text()='Соусы']")
-    public SelenideElement sauceSubHeader;
+    private SelenideElement sauceSubHeader;
 
     //Локатор подзаголовка Начинки
     @FindBy(how = How.XPATH, using = ".//h2[text()='Начинки']")
-    public SelenideElement fillingSubHeader;
+    private SelenideElement fillingSubHeader;
 
+    //Локатор кнопки Оформить заказ
+    @FindBy(how = How.XPATH, using = ".//button[text()='Оформить заказ']")
+    private SelenideElement makeOrderBtn;
 
     //Метод клика по кнопке
     public AuthPage clickEnterBtn() {
@@ -53,27 +55,33 @@ public class MainPage {
     //Метод проверки отображения конструктора
     public boolean isConstHeaderVisible() {
         constructBurgerText.shouldBe(Condition.visible);
-        return constructBurgerText.getText().equals("Соберите бургер");
+        return constructBurgerText.getText().equals("Соберите бургер") && URL.equals("https://stellarburgers.nomoreparties.site");
     }
 
-    //Метод проверки доступности подраздел Булки
-    public boolean isBunSubHeaderVisible() {
-        bunTab.click();
-        bunSubHeader.shouldBe(Condition.visible);
-        return bunSubHeader.getText().equals("Булки");
+    //Метод проверки видимости подраздел Булки
+    public boolean isActiveBunTab() throws Exception{
+        bunSubHeader.scrollIntoView(true);
+        Thread.sleep(3000);
+        return bunTab.getAttribute("class").equals("tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect");
     }
 
-    //Метод проверки доступности подраздел Соусы
-    public boolean isSauceSubHeaderVisible() {
-        sauceTab.click();
-        sauceSubHeader.shouldBe(Condition.visible);
-        return sauceSubHeader.getText().equals("Соусы");
+    //Метод проверки видимости подраздел Соусы
+    public boolean isActiveSauceTab() throws Exception {
+        sauceSubHeader.scrollIntoView(true);
+        Thread.sleep(3000);
+        return sauceTab.getAttribute("class").equals("tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect");
     }
 
-    //Метод проверки доступности подраздел Начинки
-    public boolean isFillingSubHeaderVisible() {
-        fillingTab.click();
-        fillingSubHeader.shouldBe(Condition.visible);
-        return fillingSubHeader.getText().equals("Начинки");
+    //Метод проверки видимости подраздел Начинки
+    public boolean isActiveFillingTab() throws Exception {
+        fillingSubHeader.scrollIntoView(true);
+        Thread.sleep(3000);
+        return fillingTab.getAttribute("class").equals("tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect");
+    }
+
+    //Метод проверки авторизации
+    public boolean isUserAuthorized() {
+        makeOrderBtn.shouldBe(Condition.visible);
+        return makeOrderBtn.getText().equals("Оформить заказ");
     }
 }

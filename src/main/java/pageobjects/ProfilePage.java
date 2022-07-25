@@ -4,15 +4,14 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
-import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.page;
 
 public class ProfilePage {
 
     public final static String URL = "https://stellarburgers.nomoreparties.site/account/profile";
 
-    //Локатор надписи Профиль в личном кабинете
-    @FindBy(how = How.XPATH, using = ".//*[@class='Account_text__fZAIn text text_type_main-default']")
+    //Локатор надписи в личном кабинете
+    @FindBy(how = How.XPATH, using = ".//p[@class='Account_text__fZAIn text text_type_main-default']")
     private SelenideElement profileText;
 
     //Локатор кнопки Выход
@@ -20,12 +19,12 @@ public class ProfilePage {
     private SelenideElement logOutBtn;
 
     //Метод проверки отображения кабинета авторизованного юзера
-    public boolean isUserProfileAvailable() {
+    public boolean isUserProfileVisible() {
         profileText.shouldBe(Condition.visible);
-        return profileText.getText().equals("В этом разделе вы можете изменить свои персональные данные");
+        return profileText.getText().equals("В этом разделе вы можете изменить свои персональные данные") && URL.equals("https://stellarburgers.nomoreparties.site/account/profile");
     }
 
-    //Метод выхода из аккаунта
+   //Метод выхода из аккаунта
     public AuthPage logOut() {
         logOutBtn.scrollIntoView(true).click();
         return page(AuthPage.class);

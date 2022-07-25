@@ -1,22 +1,13 @@
 package pageobjects;
 
-import client.UserClient;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
-import io.restassured.response.ValidatableResponse;
-import model.User;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 import static com.codeborne.selenide.Selenide.page;
 
 public class RegistrationPage {
-
     public final static String URL = "https://stellarburgers.nomoreparties.site/register";
-
-    private String password;
-    private UserClient userClient;
-    private String token;
-    private User user;
 
     //Локатор заголовка Регистрация
     @FindBy(how = How.XPATH, using = ".//h2[text()='Регистрация']")
@@ -73,28 +64,23 @@ public class RegistrationPage {
         return page(AuthPage.class);
     }
 
-    //Проверка отображения страницы регистрации
-    private static boolean has(Condition visible) {
-        return regHeader.has(Condition.visible);
-    }
-
-    //Проверка получения токена
-    public boolean isRegistered(String token) {
-        ValidatableResponse createResponse = userClient.createUser(user);
-        String accessToken = createResponse.extract().path("accessToken");
-        String[] split = accessToken.split(" ");
-        return token!=null && token.equals(split[1]);
-    }
-
-    //Проверка корректности регистрации юзера
-    public boolean isSuccessRegistration() {
+    //Метод нажатия на кнопку Зарегистрироваться
+    public AuthPage clickRegBtn() {
         regBtn.scrollIntoView(true).click();
-        if (password == null) {
-            return RegistrationPage.has(Condition.visible);
-        } else if (password.length() >= 6){
-            return isRegistered(token);
-        } else {
-            return errorPassword.has(Condition.visible);
-        }
+        return page(AuthPage.class);
+    }
+
+    //Проверка отображения ошибки регистрации
+    public boolean isErrorPasswordVisible() {
+        errorPassword.shouldBe(Condition.visible);
+        return  errorPassword.getText().equals("Некорректный пароль");
+    }
+
+    //Проверка отображения экрана регистрации
+    public boolean isRegPageVisible() {
+        regHeader.shouldBe(Condition.visible);
+        return  regHeader.getText().equals("Регистрация") && URL.equals("https://stellarburgers.nomoreparties.site/register");
     }
 }
+
+

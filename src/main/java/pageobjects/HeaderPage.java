@@ -1,6 +1,5 @@
 package pageobjects;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
@@ -16,11 +15,21 @@ public class HeaderPage {
 
     //Локатор кнопки Конструктор
     @FindBy(how = How.XPATH, using = ".//p[text()='Конструктор']")
-    public static SelenideElement constructorBtn;
+    private SelenideElement constructorBtn;
+
+    //Локатор логотипа компании
+    @FindBy(how = How.XPATH, using = ".//div[@class='AppHeader_header__logo__2D0X2']")
+    private SelenideElement burgerLogo;
 
     //Метод перехода по кнопке Конструктор
     public MainPage clickConstructorBtn() {
         constructorBtn.click();
+        return page(MainPage.class);
+    }
+
+    //Метод перехода на главную по клику на логотип
+    public MainPage clickBurgerLogo() {
+        burgerLogo.click();
         return page(MainPage.class);
     }
 

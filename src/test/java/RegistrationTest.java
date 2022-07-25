@@ -1,70 +1,85 @@
 import client.UserClient;
 import io.qameta.allure.junit4.DisplayName;
+import io.restassured.response.ValidatableResponse;
 import model.User;
-import org.junit.After;
+import model.UserCredentials;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import pageobjects.AuthPage;
-import pageobjects.RegistrationPage;
+import pageobjects.*;
 import static com.codeborne.selenide.Selenide.open;
-import static org.junit.Assert.assertTrue;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.junit.Assert.*;
 
 public class RegistrationTest extends BaseTest {
 
     private UserClient userClient;
-    User user = User.getRandom();
     private String token;
+    User user = User.getRandom();
+    MainPage mainPage = open(MainPage.URL, MainPage.class);
+    AuthPage authPage = open(AuthPage.URL, AuthPage.class);
+    RegistrationPage regPage = open(RegistrationPage.URL, RegistrationPage.class);
 
     @Before
     public void setUp() {
         userClient = new UserClient();
+
+        mainPage.clickEnterBtn();
+        authPage.clickRegLinkBtn();
     }
 
     @After
     public void teardown() {
-        userClient.deleteUser(token);
+        if (token != null) {
+            userClient.deleteUser(token);
+        }
     }
 
     @Test
     @DisplayName("Checking successful registration")
     public void checkSuccessRegistration() {
-        mainPage.clickEnterBtn();
-        AuthPage authPage = open(AuthPage.URL, AuthPage.class);
-        authPage.clickRegLinkBtn();
-        RegistrationPage regPage = open(RegistrationPage.URL, RegistrationPage.class);
         regPage.fillInputName(user.getName());
         regPage.fillInputEmail(user.getEmail());
         regPage.fillInputPassword(user.getPassword());
-        boolean result = regPage.isSuccessRegistration();
-        assertTrue(result);
+        regPage.clickRegBtn();
+        assertTrue(authPage.isAuthPageVisible());
+
+        UserCredentials creds = UserCredentials.from(user);
+        ValidatableResponse response = userClient.loginUser(creds);
+        token = userClient.getUserToken(response);
+        int statusCode = response.extract().statusCode();
+        assertEquals("Код статуса отличается от ожидаемого результата", SC_OK, statusCode);
     }
 
-   @Test
+    @Test
     @DisplayName("Checking registration is failed")
     public void checkRegistrationFailed() {
-        mainPage.clickEnterBtn();
-        AuthPage authPage = open(AuthPage.URL, AuthPage.class);
-        authPage.clickRegLinkBtn();
-        RegistrationPage regPage = open(RegistrationPage.URL, RegistrationPage.class);
         regPage.fillInputName(user.getName());
         regPage.fillInputEmail(user.getEmail());
         regPage.fillInputPassword(RandomStringUtils.randomAlphanumeric(5));
-        boolean result = regPage.isSuccessRegistration();
-        assertTrue(result);
+        regPage.clickRegBtn();
+        assertTrue(regPage.isErrorPasswordVisible());
+
+        UserCredentials creds = UserCredentials.from(user);
+        ValidatableResponse response = userClient.loginUser(creds);
+        token = userClient.getUserToken(response);
+        assertNull(token);
     }
 
     @Test
     @DisplayName("Checking password can not be null")
     public void checkPasswordCanNotBeNull() {
-        mainPage.clickEnterBtn();
-        AuthPage authPage = open(AuthPage.URL, AuthPage.class);
-        authPage.clickRegLinkBtn();
-        RegistrationPage regPage = open(RegistrationPage.URL, RegistrationPage.class);
         regPage.fillInputName(user.getName());
         regPage.fillInputEmail(user.getEmail());
         regPage.fillInputPassword("");
-        boolean result = regPage.isSuccessRegistration();
-        assertTrue(result);
+        regPage.clickRegBtn();
+        assertTrue(regPage.isRegPageVisible());
+
+        UserCredentials creds = UserCredentials.from(user);
+        ValidatableResponse response = userClient.loginUser(creds);
+        token = userClient.getUserToken(response);
+        assertNull(token);
     }
 }
+

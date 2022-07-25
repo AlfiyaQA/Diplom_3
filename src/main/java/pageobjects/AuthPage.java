@@ -2,7 +2,6 @@ package pageobjects;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
-import com.sun.tools.javac.Main;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 import static com.codeborne.selenide.Selenide.page;
@@ -50,15 +49,16 @@ public class AuthPage {
     }
 
     //Метод авторизации юзера, кнопка Войти
-    public AfterAuthMainPage authUser() {
+    public MainPage clickAuthBtn() throws Exception {
         authBtn.scrollIntoView(true).click();
-        return page(AfterAuthMainPage.class);
+        Thread.sleep(1000);
+        return page(MainPage.class);
     }
 
     //Метод проверки отображения страницы авторизации
-    public boolean isAuthPageAvailable() {
+    public boolean isAuthPageVisible() {
         authHeader.shouldBe(Condition.visible);
-        return  authHeader.getText().equals("Вход");
+        return  authHeader.getText().equals("Вход") && URL.equals("https://stellarburgers.nomoreparties.site/login");
     }
 
     //Метод перехода по линку Зарегистрироваться

@@ -1,3 +1,4 @@
+
 import client.UserClient;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
@@ -14,14 +15,15 @@ public class AuthorizationTest extends BaseTest {
     private UserClient userClient;
     private String token;
     User user = User.getRandom();
+    MainPage mainPage = open(MainPage.URL, MainPage.class);
+    AuthPage authPage = open(AuthPage.URL, AuthPage.class);
+    HeaderPage headerPage = open(HeaderPage.URL, HeaderPage.class);
 
     @Before
     public void setUp() {
         userClient = new UserClient();
         ValidatableResponse createResponse = userClient.createUser(user);
-        String accessToken = createResponse.extract().path("accessToken");
-        String[] split = accessToken.split(" ");
-        token = split[1];
+        token = userClient.getUserToken(createResponse);
     }
 
     @After
@@ -31,58 +33,44 @@ public class AuthorizationTest extends BaseTest {
 
     @Test
     @DisplayName("Check enter from main page")
-    public void checkEnterFromMainPage() {
+    public void checkEnterFromMainPage() throws Exception {
         mainPage.clickEnterBtn();
-        AuthPage authPage = open(AuthPage.URL, AuthPage.class);
-        authPage.fillAuthInputEmail(user.getName());
+        authPage.fillAuthInputEmail(user.getEmail());
         authPage.fillAuthInputPassword(user.getPassword());
-        authPage.authUser();
-        AfterAuthMainPage afterAuthMainPage = open(AfterAuthMainPage.URL, AfterAuthMainPage.class);
-        assertTrue(afterAuthMainPage.isUserAuthorized());
+        authPage.clickAuthBtn();
+        assertTrue(mainPage.isUserAuthorized());
     }
 
     @Test
     @DisplayName("Check enter from profile")
-    public void checkEnterFromProfile() {
-        HeaderPage headerPage = open(HeaderPage.URL, HeaderPage.class);
+    public void checkEnterFromProfile() throws Exception {
         headerPage.clickProfileBtn();
-        AuthPage authPage = open(AuthPage.URL, AuthPage.class);
-        authPage.fillAuthInputEmail(user.getName());
+        authPage.fillAuthInputEmail(user.getEmail());
         authPage.fillAuthInputPassword(user.getPassword());
-        authPage.authUser();
-        AfterAuthMainPage afterAuthMainPage = open(AfterAuthMainPage.URL, AfterAuthMainPage.class);
-        assertTrue(afterAuthMainPage.isUserAuthorized());
+        authPage.clickAuthBtn();
+        assertTrue(mainPage.isUserAuthorized());
     }
 
     @Test
-    @DisplayName("Chek enter from registration page")
-    public void checkEnterFromRegPage() {
-        mainPage.clickEnterBtn();
-        AuthPage authPage = open(AuthPage.URL, AuthPage.class);
-        authPage.clickRegLinkBtn();
+    @DisplayName("Check enter from registration page")
+    public void checkEnterFromRegPage() throws Exception {
         RegistrationPage regPage = open(RegistrationPage.URL, RegistrationPage.class);
         regPage.clickEnterLinkBtn();
-        AuthPage authPage2 = open(AuthPage.URL, AuthPage.class);
-        authPage.fillAuthInputEmail(user.getName());
+        authPage.fillAuthInputEmail(user.getEmail());
         authPage.fillAuthInputPassword(user.getPassword());
-        authPage.authUser();
-        AfterAuthMainPage afterAuthMainPage = open(AfterAuthMainPage.URL, AfterAuthMainPage.class);
-        assertTrue(afterAuthMainPage.isUserAuthorized());
+        authPage.clickAuthBtn();
+        assertTrue(mainPage.isUserAuthorized());
     }
 
     @Test
     @DisplayName("Check enter from password refresh page")
-    public void checkEnterFromPasswordRefreshPage() {
-        mainPage.clickEnterBtn();
-        AuthPage authPage = open(AuthPage.URL, AuthPage.class);
-        authPage.clickRefreshLinkBtn();
+    public void checkEnterFromPasswordRefreshPage() throws Exception {
         PasswordRefreshPage passwordRefreshPage = open(PasswordRefreshPage.URL, PasswordRefreshPage.class);
         passwordRefreshPage.clickAuthFromRefreshLinkBtn();
-        AuthPage authPage2 = open(AuthPage.URL, AuthPage.class);
-        authPage.fillAuthInputEmail(user.getName());
+        authPage.fillAuthInputEmail(user.getEmail());
         authPage.fillAuthInputPassword(user.getPassword());
-        authPage.authUser();
-        AfterAuthMainPage afterAuthMainPage = open(AfterAuthMainPage.URL, AfterAuthMainPage.class);
-        assertTrue(afterAuthMainPage.isUserAuthorized());
+        authPage.clickAuthBtn();
+        assertTrue(mainPage.isUserAuthorized());
     }
 }
+
