@@ -11,7 +11,7 @@ public class RegistrationPage {
 
     //Локатор заголовка Регистрация
     @FindBy(how = How.XPATH, using = ".//h2[text()='Регистрация']")
-    private static SelenideElement regHeader;
+    private SelenideElement regHeader;
 
     //Локатор поля Имя
     @FindBy(how = How.XPATH, using = "(.//*[contains(@class, 'input pr-6 pl-6')]/input)[1]")
